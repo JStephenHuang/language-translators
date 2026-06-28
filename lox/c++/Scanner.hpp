@@ -40,6 +40,7 @@ namespace com::craftinginterpreters::lox {
         bool match(char expected);
 
         void add_token(TokenType type);
+        void add_token(TokenType type, const Literal& literal);
         void scan_token();
 
         void string();

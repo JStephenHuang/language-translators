@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 namespace com::craftinginterpreters::lox {
     enum TokenType {
@@ -28,14 +29,23 @@ namespace com::craftinginterpreters::lox {
         // EOF (already a pre built cpp enum)
     };
 
+    struct Literal {
+        bool boolean;
+        double num;
+        std::string str;
+    };
+
+    std::string_view to_string(TokenType type);
+
     class Token {
         public:
         TokenType type;
         std::string lexeme;
+        Literal literal;
         int line;
 
         
-        Token(const TokenType type, const std::string lexeme, const int line);
+        Token(const TokenType type, const std::string lexeme, Literal literal, const int line);
         friend std::ostream& operator<<(std::ostream& os, const Token& token); 
     };
 

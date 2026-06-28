@@ -1,4 +1,5 @@
 #include "Scanner.hpp"
+#include <string>
 
 namespace com::craftinginterpreters::lox {
     bool Scanner::is_at_end() const {
@@ -40,8 +41,12 @@ namespace com::craftinginterpreters::lox {
     }
 
     void Scanner::add_token(TokenType type) {
+        add_token(type, Literal()); 
+    }
+
+    void Scanner::add_token(TokenType type, const Literal& literal) {
         std::string text = source.substr(start, current-start);
-        tokens.push_back(Token(type, text, line));
+        tokens.push_back(Token(type, text, literal, line));
     }
 
     void Scanner::string() {
@@ -58,7 +63,10 @@ namespace com::craftinginterpreters::lox {
         // consume ending quotes
         advance();
 
-        add_token(STRING);
+        Literal literal;
+        literal.str = source.substr(start + 1, current-start - 1);
+
+        add_token(STRING, literal);
     }
 
     void Scanner::number() {
@@ -72,7 +80,9 @@ namespace com::craftinginterpreters::lox {
             while (is_digit(peek())) advance();
         }
 
-        add_token(NUMBER);
+        Literal literal;
+        literal.num = std::stod(source.substr(start, current-start));
+        add_token(NUMBER, literal);
     }
 
     void Scanner::identifier() {
@@ -80,7 +90,17 @@ namespace com::craftinginterpreters::lox {
 
         std::string text = source.substr(start, current-start);
         auto it = keywords.find(text);
-        add_token(it == keywords.end() ? IDENTIFIER : it->second);
+        
+        TokenType type = it == keywords.end() ? IDENTIFIER : it->second;
+        Literal literal;
+
+        if (type == TRUE) {
+            literal.boolean = true;
+        } else if (type == FALSE) {
+            literal.boolean = false;
+        }
+
+        add_token(type, literal);
     }
     
     void Scanner::scan_token() {
@@ -158,7 +178,7 @@ namespace com::craftinginterpreters::lox {
             start = current;
             scan_token();
         }
-        tokens.push_back(Token(END_OF_FILE, "", line));
+        tokens.push_back(Token(END_OF_FILE, "", Literal(), line));
         return tokens;
     };
 
