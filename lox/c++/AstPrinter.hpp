@@ -6,29 +6,43 @@
 #include <memory>
 
 #include "Expr.hpp"
+#include "Token.hpp"
 
-namespace com::craftinginterpreters::lox {  
-    class AstPrinter : public Visitor {
-        void parenthesize(const std::string& name, std::initializer_list<const Expr*> exprs) {
+using namespace std;
 
-            std::cout << "(" << name; 
+class AstPrinter : public Visitor {
+    void parenthesize(const std::string& name, std::initializer_list<const Expr*> exprs) const {
 
-            for (const Expr* expr : exprs) {
-                std::cout << " ";
-                expr->accept(*this);
-            }        
-            std::cout << ")";
+        cout << "(" << name; 
+
+        for (const Expr* expr : exprs) {
+            cout << " ";
+            expr->accept(*this);
+        }        
+        cout << ")";
+    }
+    public:
+        AstPrinter() {};
+
+        void print(const Expr& expr) {
+           expr.accept(*this);
         }
-        public:
-            void print(const Expr& expr) {
-               expr.accept(*this);
-            }
 
-            void visitBinaryExpr(const BinaryExpr& expr) {
-                parenthesize(expr.op.lexeme, {expr.left.get(), expr.right.get()}); 
-            }
-    };
+        void visitBinaryExpr(const BinaryExpr& expr) const {
+            parenthesize(expr.op.lexeme, { expr.left.get(), expr.right.get() }); 
+        }
 
-}
+        void visitGroupingExpr(const GroupingExpr& expr) const {
+            parenthesize("group", { expr.expr.get() });
+        }
+        
+        void visitLiteralExpr(const LiteralExpr& expr) const {
+            cout << expr.t.lexeme; 
+        }
+
+        void visitUnaryExpr(const UnaryExpr& expr) const {
+            parenthesize(expr.op.lexeme, { expr.right.get() });
+        }
+};
 
 #endif
