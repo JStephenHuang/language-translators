@@ -6,12 +6,13 @@
 #include <string>
 #include <vector>
 
+#include "AstPrinter.hpp"
+#include "LoxErrorHandler.hpp"
 #include "Scanner.hpp"
+#include "Parser.hpp"
 #include "Token.hpp"
 
 class Lox {
-    inline static bool had_error = false;
-
     void run_file(const std::string& path) {
         std::ifstream file(path);
 
@@ -29,7 +30,7 @@ class Lox {
 
         run(ss.str());
 
-        if (had_error) std::exit(65);
+        if (LoxErrorHandler::had_error) std::exit(65);
     }
 
     void run_prompt() {
@@ -38,7 +39,7 @@ class Lox {
             std::cout << "> ";
             if (!std::getline(std::cin, line)) break;
             run(line);
-            had_error = false;
+            LoxErrorHandler::had_error = false;
         }
     }
 
@@ -46,32 +47,12 @@ class Lox {
         Scanner scanner = Scanner(source);
         std::vector<Token> tokens = scanner.scan_tokens();
 
-        for (const Token& token : tokens) {
-            if (token.type == UNKNOWN_TOKEN) {
-                error(token.line, "Unexpected character: " + token.lexeme);
-                continue;
-            }
-            if (token.type == ERROR_STRING) {
-                error(token.line, "Unexpected string: " + token.lexeme);
-                continue;
-            }
-            if (token.type == ERROR_BLOCK_COMMENT) {
-                error(token.line, "Unexpected block comment: " + token.lexeme);
-                continue;
-            }
-            std::cout << token << " "  << "\n";
+        Parser parser = Parser(tokens);
+        std::unique_ptr<Expr> expression = parser.parse();
 
-        }
+        if (LoxErrorHandler::had_error) return;
 
-    }
-
-    static void error(int line, const std::string& message) {
-        report(line, "", message);
-    }
-
-    static void report(int line, const std::string& where, const std::string& message) {
-        std::cerr << "[line " << line << "] Error" << where << ": " << message << "\n";
-        had_error = true;
+        AstPrinter().print(*expression);
     }
 
     public:

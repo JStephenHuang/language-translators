@@ -1,6 +1,6 @@
 // this is a comment
-(( )){} // grouping stuff
-!*+-/=<> <= == // operators
+(12 >= ( 2 + 2 )){} // grouping stuff
+!true 12 * 2 + 4 - 13 / 2 =< => <= == // operators
 "asdnfweio"
 123.123
 12312

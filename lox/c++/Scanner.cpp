@@ -54,7 +54,7 @@ void Scanner::string() {
     }
 
     if (is_at_end()) {
-        add_token(ERROR_STRING);
+        LoxErrorHandler::error(line, "Unterminated string.");
         return;
     }
 
@@ -134,7 +134,7 @@ void Scanner::scan_token() {
                       }
 
                       if (is_at_end()) {
-                          add_token(ERROR_BLOCK_COMMENT);
+                          LoxErrorHandler::error(line, "Unexpected block comment.");
                           return;
                       }
                       // consume the * and the /
@@ -163,7 +163,7 @@ void Scanner::scan_token() {
                   } else if (is_alpha(c)) {
                       identifier();
                   } else {
-                      add_token(UNKNOWN_TOKEN);
+                      LoxErrorHandler::error(line, "Unexpected character.");
                   }
 
                   break;

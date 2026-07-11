@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "LoxErrorHandler.hpp"
 #include "Token.hpp"
 
 class Scanner {
