@@ -4,6 +4,9 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <variant>
+
+#include "lox_literal.hpp"
 
 enum TokenType {
     // Single-character tokens.
@@ -23,15 +26,8 @@ enum TokenType {
     AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
     PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
 
-    UNKNOWN_TOKEN, ERROR_STRING, ERROR_BLOCK_COMMENT,
     END_OF_FILE
         // EOF (already a pre built cpp enum)
-};
-
-struct Literal {
-    bool boolean;
-    double num;
-    std::string str;
 };
 
 std::string_view to_string(TokenType type);
@@ -40,11 +36,10 @@ class Token {
     public:
         TokenType type;
         std::string lexeme;
-        Literal literal;
+        lox_literal literal;
         int line;
 
-
-        Token(const TokenType type, const std::string lexeme, Literal literal, const int line);
+        Token(const TokenType type, const std::string lexeme, lox_literal l, const int line);
         friend std::ostream& operator<<(std::ostream& os, const Token& token); 
 };
 

@@ -1,6 +1,6 @@
 #include "Token.hpp"
 
-Token::Token(TokenType type, std::string lexeme, Literal literal, int line) : type(type), lexeme(std::move(lexeme)), literal(std::move(literal)), line(line) {};
+Token::Token(TokenType type, std::string lexeme, lox_literal literal, int line) : type(type), lexeme(std::move(lexeme)), literal(std::move(literal)), line(line) {};
 
 std::string_view to_string(TokenType type) {
     switch (type) {
@@ -50,3 +50,5 @@ std::string_view to_string(TokenType type) {
 std::ostream& operator<<(std::ostream& os, const Token& token) {
     return os << to_string(token.type) << " " << token.lexeme;
 }
+
+

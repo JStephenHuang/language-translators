@@ -6,13 +6,18 @@
 #include <string>
 #include <vector>
 
-#include "AstPrinter.hpp"
-#include "LoxErrorHandler.hpp"
+#include "Token.hpp"
 #include "Scanner.hpp"
 #include "Parser.hpp"
-#include "Token.hpp"
+#include "Interpreter.hpp"
+
+#include "AstPrinter.hpp"
+#include "lox_errors.hpp"
 
 class Lox {
+
+    Interpreter interpreter;
+
     void run_file(const std::string& path) {
         std::ifstream file(path);
 
@@ -30,7 +35,8 @@ class Lox {
 
         run(ss.str());
 
-        if (LoxErrorHandler::had_error) std::exit(65);
+        if (lox::errors::had_error) std::exit(65);
+        if (lox::errors::had_runtime_error) std::exit(70);
     }
 
     void run_prompt() {
@@ -39,7 +45,7 @@ class Lox {
             std::cout << "> ";
             if (!std::getline(std::cin, line)) break;
             run(line);
-            LoxErrorHandler::had_error = false;
+            lox::errors::had_error = false;
         }
     }
 
@@ -50,9 +56,14 @@ class Lox {
         Parser parser = Parser(tokens);
         std::unique_ptr<Expr> expression = parser.parse();
 
-        if (LoxErrorHandler::had_error) return;
-
+        if (lox::errors::had_error) return;
+        
         AstPrinter().print(*expression);
+
+        std::cout << "\n";
+
+        interpreter.interpret(*expression);
+
     }
 
     public:

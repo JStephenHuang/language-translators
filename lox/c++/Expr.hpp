@@ -12,16 +12,16 @@ class UnaryExpr;
 
 class Visitor {
     public:
-        virtual void visitBinaryExpr(const BinaryExpr& expr) const = 0;
-        virtual void visitGroupingExpr(const GroupingExpr& expr) const = 0;
-        virtual void visitLiteralExpr(const LiteralExpr& expr) const = 0;
-        virtual void visitUnaryExpr(const UnaryExpr& expr) const = 0;
+        virtual void visit_binary_expr(BinaryExpr& expr) = 0;
+        virtual void visit_grouping_expr(GroupingExpr& expr) = 0;
+        virtual void visit_literal_expr(LiteralExpr& expr) = 0;
+        virtual void visit_unary_expr(UnaryExpr& expr) = 0;
 };
 
 class Expr {
     public:
         virtual ~Expr() = default;
-        virtual void accept(const Visitor& visitor) const = 0;     
+        virtual void accept(Visitor& visitor) = 0;     
 };  
 
 class BinaryExpr : public Expr {
@@ -33,8 +33,8 @@ class BinaryExpr : public Expr {
         BinaryExpr(std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr> right)
             : left(std::move(left)), op(op), right(std::move(right)) {} 
 
-        void accept(const Visitor& visitor) const override {
-            visitor.visitBinaryExpr(*this);
+        void accept(Visitor& visitor) override {
+            visitor.visit_binary_expr(*this);
         }
 };
 
@@ -45,20 +45,20 @@ class GroupingExpr : public Expr {
         GroupingExpr(std::unique_ptr<Expr> expr)
             : expr(std::move(expr)) {};
 
-        void accept(const Visitor& visitor) const override {
-            visitor.visitGroupingExpr(*this);
+        void accept(Visitor& visitor) override {
+            visitor.visit_grouping_expr(*this);
         }
 };
 
 class LiteralExpr : public Expr {
     public:
-        Token t;
+        lox_literal value;
 
-        LiteralExpr(Token token)
-            : t(token) {};
+        LiteralExpr(lox_literal value)
+            : value(std::move(value)) {};
 
-        void accept(const Visitor& visitor) const override {
-            visitor.visitLiteralExpr(*this);
+        void accept(Visitor& visitor) override {
+            visitor.visit_literal_expr(*this);
         }
 };
 
@@ -70,8 +70,8 @@ class UnaryExpr : public Expr {
         UnaryExpr(Token op, std::unique_ptr<Expr> right) 
             : op(op), right(std::move(right)) {};
 
-        void accept(const Visitor& visitor) const override {
-            visitor.visitUnaryExpr(*this);
+        void accept(Visitor& visitor) override {
+            visitor.visit_unary_expr(*this);
         }
 };
 

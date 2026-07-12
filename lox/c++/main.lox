@@ -1,13 +1,1 @@
-// this is a comment
-(12 >= ( 2 + 2 )){} // grouping stuff
-!true 12 * 2 + 4 - 13 / 2 =< => <= == // operators
-"asdnfweio"
-123.123
-12312
-sd
-var 
-/* askdjf 
-sdfsadfnjks d
-sdf jasd f
-jsdkf asdnfweiodf sdfsadfnjks 
-*/
+12 > 12

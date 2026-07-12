@@ -1,6 +1,4 @@
 #include "Parser.hpp"
-#include "Token.hpp"
-#include <memory>
 
 Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens) {};
 
@@ -65,12 +63,12 @@ std::unique_ptr<Expr> Parser::unary() {
 }
 
 std::unique_ptr<Expr> Parser::primary() {
-    if (match({ FALSE })) { return std::make_unique<LiteralExpr>(previous()); }
-    if (match({ TRUE })) { return std::make_unique<LiteralExpr>(previous()); }
-    if (match({ NIL })) { return std::make_unique<LiteralExpr>(previous()); }
+    if (match({ FALSE })) { return std::make_unique<LiteralExpr>(previous().literal); }
+    if (match({ TRUE })) { return std::make_unique<LiteralExpr>(previous().literal); }
+    if (match({ NIL })) { return std::make_unique<LiteralExpr>(previous().literal); }
 
     if (match({ NUMBER, STRING })) {
-        return std::make_unique<LiteralExpr>(previous());
+        return std::make_unique<LiteralExpr>(previous().literal);
     }
 
     if (match({ LEFT_PAREN })) {
@@ -93,17 +91,17 @@ bool Parser::match(const std::initializer_list<TokenType>& types) {
     return false;
 }   
 
-bool Parser::isAtEnd() {
+bool Parser::is_at_end() {
     return peek().type == END_OF_FILE;
 }
 
 bool Parser::check(TokenType type) {
-    if (isAtEnd()) return false;
+    if (is_at_end()) return false;
     return peek().type == type;
 }
 
 Token Parser::advance() {
-    if (!isAtEnd()) current ++;
+    if (!is_at_end()) current ++;
     return previous();
 }
 
@@ -123,7 +121,7 @@ Token Parser::consume(TokenType type, const std::string& message) {
 void Parser::synchronize() {
     advance();
 
-    while (!isAtEnd()) {
+    while (!is_at_end()) {
         if (previous().type == SEMICOLON) return;
 
         switch(peek().type) {
@@ -143,15 +141,15 @@ void Parser::synchronize() {
     }
 }
 
-ParseError Parser::error(const Token& token, const std::string& message) {
-    LoxErrorHandler::error(token, message);
-    return ParseError(message);
+lox::errors::ParseError Parser::error(const Token& token, const std::string& message) {
+    lox::errors::error(token, message);
+    return lox::errors::ParseError(message);
 }
 
 std::unique_ptr<Expr> Parser::parse() {
     try {
         return expression();
-    } catch (const ParseError& error) {
+    } catch (const lox::errors::ParseError& error) {
         return nullptr;
     }
 }

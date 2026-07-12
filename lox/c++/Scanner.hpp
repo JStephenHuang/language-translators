@@ -5,8 +5,10 @@
 #include <vector>
 #include <unordered_map>
 
-#include "LoxErrorHandler.hpp"
 #include "Token.hpp"
+#include "lox_errors.hpp"
+
+using namespace lox::errors;
 
 class Scanner {
     std::string source;
@@ -43,7 +45,7 @@ class Scanner {
     bool match(char expected);
 
     void add_token(TokenType type);
-    void add_token(TokenType type, const Literal& literal);
+    void add_token(TokenType type, const lox_literal& literal);
     void scan_token();
 
     void string();

@@ -7,14 +7,11 @@
 #include <string>
 #include <vector>
 
-#include "LoxErrorHandler.hpp"
 #include "Expr.hpp"
 #include "Token.hpp"
+#include "lox_errors.hpp"
 
-class ParseError : public std::runtime_error {
-    public:
-        explicit ParseError(const std::string& message) : std::runtime_error(message) {}
-}; 
+
 class Parser {
     std::vector<Token> tokens;
     int current = 0;
@@ -29,7 +26,7 @@ class Parser {
 
     bool match(const std::initializer_list<TokenType>& types);
     bool check(TokenType type);
-    bool isAtEnd();
+    bool is_at_end();
 
     Token advance();
     Token peek();
@@ -37,7 +34,7 @@ class Parser {
 
     Token consume(TokenType type, const std::string& message);
 
-    ParseError error(const Token& token, const std::string& message);
+    lox::errors::ParseError error(const Token& token, const std::string& message);
     
     void synchronize();
 

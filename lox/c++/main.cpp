@@ -6,8 +6,8 @@ int main() {
     lox.main({"main.lox"});
 
     // ast printer test chapter 5
-    // Literal number_123{false, 123, ""};
-    // Literal number_45_67{false, 45.67, ""};
+    // lox_literal number_123{false, 123, ""};
+    // lox_literal number_45_67{false, 45.67, ""};
 
     // std::unique_ptr<Expr> expression = std::make_unique<BinaryExpr>(
     //     std::make_unique<UnaryExpr>(

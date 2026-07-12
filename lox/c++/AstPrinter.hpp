@@ -8,41 +8,19 @@
 #include "Expr.hpp"
 #include "Token.hpp"
 
-using namespace std;
-
 class AstPrinter : public Visitor {
-    void parenthesize(const std::string& name, std::initializer_list<const Expr*> exprs) const {
+    void parenthesize(const std::string& name, std::initializer_list<Expr*> exprs);
 
-        cout << "(" << name; 
-
-        for (const Expr* expr : exprs) {
-            cout << " ";
-            expr->accept(*this);
-        }        
-        cout << ")";
-    }
     public:
         AstPrinter() {};
 
-        void print(const Expr& expr) {
-           expr.accept(*this);
-        }
+        void print(Expr& expr);
 
-        void visitBinaryExpr(const BinaryExpr& expr) const {
-            parenthesize(expr.op.lexeme, { expr.left.get(), expr.right.get() }); 
-        }
+        void visit_binary_expr(BinaryExpr& expr) override;
+        void visit_grouping_expr(GroupingExpr& expr) override;
+        void visit_literal_expr(LiteralExpr& expr) override;
+        void visit_unary_expr(UnaryExpr& expr) override;
 
-        void visitGroupingExpr(const GroupingExpr& expr) const {
-            parenthesize("group", { expr.expr.get() });
-        }
-        
-        void visitLiteralExpr(const LiteralExpr& expr) const {
-            cout << expr.t.lexeme; 
-        }
-
-        void visitUnaryExpr(const UnaryExpr& expr) const {
-            parenthesize(expr.op.lexeme, { expr.right.get() });
-        }
 };
 
 #endif

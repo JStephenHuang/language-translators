@@ -39,10 +39,10 @@ bool Scanner::match(char expected) {
 }
 
 void Scanner::add_token(TokenType type) {
-    add_token(type, Literal()); 
+    add_token(type, lox_literal()); 
 }
 
-void Scanner::add_token(TokenType type, const Literal& literal) {
+void Scanner::add_token(TokenType type, const lox_literal& literal) {
     std::string text = source.substr(start, current-start);
     tokens.push_back(Token(type, text, literal, line));
 }
@@ -54,17 +54,14 @@ void Scanner::string() {
     }
 
     if (is_at_end()) {
-        LoxErrorHandler::error(line, "Unterminated string.");
+        lox::errors::error(line, "Unterminated string.");
         return;
     }
 
+    add_token(STRING, lox_literal(source.substr(start + 1, current-start - 1)));
+    
     // consume ending quotes
     advance();
-
-    Literal literal;
-    literal.str = source.substr(start + 1, current-start - 1);
-
-    add_token(STRING, literal);
 }
 
 void Scanner::number() {
@@ -78,9 +75,7 @@ void Scanner::number() {
         while (is_digit(peek())) advance();
     }
 
-    Literal literal;
-    literal.num = std::stod(source.substr(start, current-start));
-    add_token(NUMBER, literal);
+    add_token(NUMBER, lox_literal(std::stod(source.substr(start, current-start))));
 }
 
 void Scanner::identifier() {
@@ -90,15 +85,16 @@ void Scanner::identifier() {
     auto it = keywords.find(text);
 
     TokenType type = it == keywords.end() ? IDENTIFIER : it->second;
-    Literal literal;
+    // lox_literal literal;
 
-    if (type == TRUE) {
-        literal.boolean = true;
-    } else if (type == FALSE) {
-        literal.boolean = false;
-    }
+    // if (type == TRUE) {
+    //     literal = true;
+    // } else if (type == FALSE) {
+    //     literal = false;
+    // }
 
-    add_token(type, literal);
+    // add_token(type, literal);
+    add_token(type);
 }
 
 void Scanner::scan_token() {
@@ -134,7 +130,7 @@ void Scanner::scan_token() {
                       }
 
                       if (is_at_end()) {
-                          LoxErrorHandler::error(line, "Unexpected block comment.");
+                          lox::errors::error(line, "Unexpected block comment.");
                           return;
                       }
                       // consume the * and the /
@@ -163,7 +159,7 @@ void Scanner::scan_token() {
                   } else if (is_alpha(c)) {
                       identifier();
                   } else {
-                      LoxErrorHandler::error(line, "Unexpected character.");
+                      lox::errors::error(line, "Unexpected character.");
                   }
 
                   break;
@@ -176,6 +172,6 @@ std::vector<Token> Scanner::scan_tokens() {
         start = current;
         scan_token();
     }
-    tokens.push_back(Token(END_OF_FILE, "", Literal(), line));
+    tokens.push_back(Token(END_OF_FILE, "", lox_literal(), line));
     return tokens;
 };
