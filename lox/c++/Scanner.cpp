@@ -85,16 +85,16 @@ void Scanner::identifier() {
     auto it = keywords.find(text);
 
     TokenType type = it == keywords.end() ? IDENTIFIER : it->second;
-    // lox_literal literal;
+    lox_literal literal;
 
-    // if (type == TRUE) {
-    //     literal = true;
-    // } else if (type == FALSE) {
-    //     literal = false;
-    // }
+    if (type == TRUE) {
+        literal = true;
+    } else if (type == FALSE) {
+        literal = false;
+    }
 
-    // add_token(type, literal);
-    add_token(type);
+    add_token(type, literal);
+    // add_token(type);
 }
 
 void Scanner::scan_token() {

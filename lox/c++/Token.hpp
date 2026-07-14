@@ -1,5 +1,4 @@
-#ifndef TOKEN_HPP
-#define TOKEN_HPP
+#pragma once
 
 #include <ostream>
 #include <string>
@@ -54,5 +53,3 @@ class Token {
 
    but I guess that wouldn't be much different from c. we take advantage of the c++ class haha.
    */
-
-#endif

@@ -1,1 +1,3 @@
-12 > 12
+print "one";
+print false;
+print 2 + 1;

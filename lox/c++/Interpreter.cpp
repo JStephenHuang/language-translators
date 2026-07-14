@@ -4,6 +4,10 @@ void Interpreter::evaluate(Expr& expr) {
     expr.accept(*this);
 }
 
+void Interpreter::execute(Stmt& stmt) {
+    stmt.accept(*this);
+}
+
 bool Interpreter::is_truthy(const lox_literal& literal) const {
     if (is_nil(literal)) {
         return false;
@@ -27,6 +31,7 @@ void Interpreter::check_number_operands(const Token& op, const lox_literal& left
     throw lox::errors::RuntimeError(op, "Operands must be a numbers.");
 }
 
+// expr
 
 void Interpreter::visit_literal_expr(LiteralExpr& expr) {
     rs.push(expr.value);
@@ -41,7 +46,9 @@ void Interpreter::visit_unary_expr(UnaryExpr& expr) {
 
     switch (expr.op.type) {
         case BANG: {
-            bool value = !is_truthy(pop());
+            bool value = !is_truthy(rs.top());
+
+            rs.pop();
             rs.push(value);
 
             return;
@@ -147,26 +154,24 @@ void Interpreter::visit_binary_expr(BinaryExpr& expr) {
     }
 }
 
-void Interpreter::interpret(Expr& expr) {
+// stmt
+
+void Interpreter::visit_expression_stmt(ExpressionStmt& stmt) {
+    evaluate(*stmt.expr);
+}
+
+void Interpreter::visit_print_stmt(PrintStmt& stmt) {
+    evaluate(*stmt.expr);
+    lox_literal value = rs.top();
+    std::cout << value << "\n";
+}
+
+void Interpreter::interpret(std::vector<std::unique_ptr<Stmt>>& statements) {
     try {
-        evaluate(expr);
-
-        // check if empty?
-
-        lox_literal value = rs.top();
-        rs.pop();
-
-        std::cout << value << "\n";
+        for (std::unique_ptr<Stmt>& statement : statements) {
+            execute(*statement);
+        }
     } catch (const lox::errors::RuntimeError& error) {
         lox::errors::runtime_error(error);
     }
-}
-
-// rs helper
-
-lox_literal Interpreter::pop() {
-    // pops the value for us
-    lox_literal l = rs.top();
-    rs.pop();
-    return l;
 }

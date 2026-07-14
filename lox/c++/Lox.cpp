@@ -54,15 +54,15 @@ class Lox {
         std::vector<Token> tokens = scanner.scan_tokens();
 
         Parser parser = Parser(tokens);
-        std::unique_ptr<Expr> expression = parser.parse();
+        std::vector<std::unique_ptr<Stmt>> statements = parser.parse();
 
         if (lox::errors::had_error) return;
         
-        AstPrinter().print(*expression);
+        // AstPrinter().print(*expression);
 
-        std::cout << "\n";
+        // std::cout << "\n";
 
-        interpreter.interpret(*expression);
+        interpreter.interpret(statements);
 
     }
 

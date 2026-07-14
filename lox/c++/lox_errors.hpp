@@ -24,5 +24,4 @@ namespace lox::errors {
     void error(int line, std::string_view message);
     void error(const Token& token, std::string_view message);
     void runtime_error(const RuntimeError& error);
-
 }

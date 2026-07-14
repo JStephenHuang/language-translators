@@ -1,5 +1,4 @@
-#ifndef EXPR_HPP
-#define EXPR_HPP
+#pragma once
 
 #include <memory>
 
@@ -10,12 +9,18 @@ class GroupingExpr;
 class LiteralExpr;
 class UnaryExpr;
 
+class ExpressionStmt;
+class PrintStmt;
+
 class Visitor {
     public:
         virtual void visit_binary_expr(BinaryExpr& expr) = 0;
         virtual void visit_grouping_expr(GroupingExpr& expr) = 0;
         virtual void visit_literal_expr(LiteralExpr& expr) = 0;
         virtual void visit_unary_expr(UnaryExpr& expr) = 0;
+
+        virtual void visit_expression_stmt(ExpressionStmt& stmt) = 0;
+        virtual void visit_print_stmt(PrintStmt& stmt) = 0;
 };
 
 class Expr {
@@ -75,4 +80,30 @@ class UnaryExpr : public Expr {
         }
 };
 
-#endif
+class Stmt {
+    public:
+        virtual ~Stmt() = default;
+        virtual void accept(Visitor& visitor) = 0;
+};
+
+class ExpressionStmt : public Stmt {
+    public: 
+        std::unique_ptr<Expr> expr;
+
+        ExpressionStmt(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
+
+        void accept(Visitor& visitor) override {
+            visitor.visit_expression_stmt(*this);
+        }
+};
+
+class PrintStmt : public Stmt {
+    public: 
+        std::unique_ptr<Expr> expr;
+
+        PrintStmt(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
+
+        void accept(Visitor& visitor) override {
+            visitor.visit_print_stmt(*this);
+        }
+};

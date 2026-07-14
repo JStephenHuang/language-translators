@@ -1,11 +1,10 @@
-#ifndef AST_PRINTER_HPP
-#define AST_PRINTER_HPP
+#pragma once
 
 #include <initializer_list>
 #include <iostream>
 #include <memory>
 
-#include "Expr.hpp"
+#include "Ast.hpp"
 #include "Token.hpp"
 
 class AstPrinter : public Visitor {
@@ -21,6 +20,7 @@ class AstPrinter : public Visitor {
         void visit_literal_expr(LiteralExpr& expr) override;
         void visit_unary_expr(UnaryExpr& expr) override;
 
-};
+        void visit_expression_stmt(ExpressionStmt& stmt) override {};
+        void visit_print_stmt(PrintStmt& stmt) override {};
 
-#endif
+};

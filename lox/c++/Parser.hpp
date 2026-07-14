@@ -1,5 +1,4 @@
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#pragma once
 
 #include <initializer_list>
 #include <memory>
@@ -7,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "Expr.hpp"
+#include "Ast.hpp"
 #include "Token.hpp"
 #include "lox_errors.hpp"
 
@@ -23,6 +22,11 @@ class Parser {
     std::unique_ptr<Expr> factor();
     std::unique_ptr<Expr> unary();
     std::unique_ptr<Expr> primary();
+
+    std::unique_ptr<Stmt> statement();
+    std::unique_ptr<Stmt> expression_stmt();
+    std::unique_ptr<Stmt> print_stmt();
+    
 
     bool match(const std::initializer_list<TokenType>& types);
     bool check(TokenType type);
@@ -42,9 +46,7 @@ class Parser {
     public:
         Parser(const std::vector<Token>& tokens);
 
-        std::unique_ptr<Expr> parse();
+        std::vector<std::unique_ptr<Stmt>> parse();
 
             
 };
-
-#endif

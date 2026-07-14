@@ -2,6 +2,8 @@
 
 Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens) {};
 
+// expr grammar
+
 std::unique_ptr<Expr> Parser::expression() { return equality(); }
 
 std::unique_ptr<Expr> Parser::equality() { 
@@ -80,6 +82,28 @@ std::unique_ptr<Expr> Parser::primary() {
     throw error(peek(), "Expected expression.");
 }
 
+// stmt grammar
+
+std::unique_ptr<Stmt> Parser::statement() {
+    if (match({ PRINT })) return print_stmt();
+
+    return expression_stmt();
+}
+
+std::unique_ptr<Stmt> Parser::expression_stmt() {
+    std::unique_ptr<Expr> value = expression();
+    consume(SEMICOLON, "Expect ';' after expression.");
+    return std::make_unique<ExpressionStmt>(std::move(value));
+}
+
+std::unique_ptr<Stmt> Parser::print_stmt() {
+    std::unique_ptr<Expr> value = expression();
+    consume(SEMICOLON, "Expect ';' after expression.");
+    return std::make_unique<PrintStmt>(std::move(value));
+}
+
+// helpers
+
 bool Parser::match(const std::initializer_list<TokenType>& types) {
     for (TokenType type : types) {
         if (check(type)) {
@@ -146,10 +170,11 @@ lox::errors::ParseError Parser::error(const Token& token, const std::string& mes
     return lox::errors::ParseError(message);
 }
 
-std::unique_ptr<Expr> Parser::parse() {
-    try {
-        return expression();
-    } catch (const lox::errors::ParseError& error) {
-        return nullptr;
+std::vector<std::unique_ptr<Stmt>> Parser::parse() {
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!is_at_end()) {
+        statements.push_back(statement());
     }
+    
+    return statements;
 }

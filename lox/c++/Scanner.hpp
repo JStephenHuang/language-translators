@@ -1,5 +1,4 @@
-#ifndef SCANNER_HPP
-#define SCANNER_HPP 
+#pragma once
 
 #include <string>
 #include <vector>
@@ -57,5 +56,3 @@ class Scanner {
     std::vector<Token> scan_tokens();
 
 };
-
-#endif
